@@ -49,7 +49,6 @@ class User(UserMixin, db.Model):
 
 
 class Items(db.Model):
-    # Can I make a virutal definition that does my calculations?
     id = db.Column(db.Integer, primary_key=True)
     invoice = db.Column(db.String(20))
     date = db.Column(db.String(50))

@@ -117,14 +117,23 @@ def freight_sql(lng_lst, frt_index, invoice_no, invoice_date, year, month, day, 
     db.session.commit()
 
 
-def dir_loop(files_output, local_path):
+def check_distributor(pdf):
+    if "Krueger" in pdf:
+        return "Krueger"
+    elif "4831 W. State Street Milwaukee" in pdf:
+        return "Kennicot"
+    elif "Doran" in pdf:
+        return "Doran"
+
+
+def dir_loop(files_output, pdf_folder):
     rep = {" ST": "", " BU": "", " PC": "", "'": ""}
     rep = dict((re.escape(k), v) for k, v in rep.items())
     pattern = re.compile("|".join(rep.keys()))
     rep2 = {"$": "", ",": ""}
     rep2 = dict((re.escape(g), h) for g, h in rep2.items())
     pattern2 = re.compile("|".join(rep2.keys()))
-    files, pdf_path = files_output, local_path
+    files, pdf_path = files_output, pdf_folder
     short_list = []
     total_items = 0
     freight_invoice = ''

@@ -13,7 +13,7 @@ from werkzeug.utils import secure_filename
 from app.pdf import dir_loop
 from sqlalchemy.sql import func
 from app.models import Items, Freight
-from sqlalchemy import cast, Numeric
+from sqlalchemy import cast, Numeric, desc
 
 
 def allowed_file(filename):
@@ -68,9 +68,30 @@ def fresh():
 @app.route('/freight', methods=['GET'])
 @login_required
 def freight():
-    f = db.session.query(Freight.invoice, Freight.date, Freight.price, Freight.source)
-    a = db.session.query(cast(func.sum(Freight.price) / func.count(Freight.price), Numeric(2, 2)))
-    return render_template('freight.html', title='Freight', f=f, a=a)
+    a = db.session.query(Freight.year, Freight.month, func.sum(Freight.price))\
+        .group_by(Freight.year, Freight.month).\
+        order_by(desc(Freight.year), desc(Freight.month))
+    return render_template('freight.html', title='Freight', a=a)
+
+
+@app.route('/add_item', methods=['GET', 'POST'])
+@login_required
+def add_item():
+    if request.method == 'POST':
+        item = Items(request.form['invoice'], request.form['invoice-date'], request.form['year'],
+                     request.form['month'], request.form['day'], request.form['source'], request.form['qty'],
+                     request.form['itm'], request.form['itm'], request.form['item'], request.form['type'],
+                     request.form['price'], request.form['total-price'], request.form['qty'], request.form['desc'],
+                     request.form['file'])
+        db.session.add(item)
+        return redirect(url_for('add_item'))
+    return render_template('add_item.html', title='Add Item')
+
+
+@app.route('/add_freight', methods=['POST'])
+@login_required
+def add_freight():
+    return render_template('add_freight.html', title='Add Freight')
 
 
 @app.route('/login', methods=['GET', 'POST'])
@@ -109,6 +130,20 @@ def register():
         db.session.commit()
         flash('Congratulations, you are now a registered user!')
         return redirect(url_for('login'))
+    return render_template('register.html', title='Register', form=form)
+
+
+@app.route('/add_user', methods=['GET', 'POST'])
+@login_required
+def add_user():
+    form = RegistrationForm()
+    if form.validate_on_submit():
+        user = User(username=form.username.data, email=form.email.data)
+        user.set_password(form.password.data)
+        db.session.add(user)
+        db.session.commit()
+        flash('User added to dp-invoice.')
+        return redirect(url_for('index'))
     return render_template('register.html', title='Register', form=form)
 
 

@@ -1,0 +1,41 @@
+{% extends 'base.html' %}
+
+<form>
+    <div class="form-group">
+        <label for="invoice">Invoice Number</label>
+        <input type="text" class="form-control" id="invoice">
+    </div>
+    <div class="form-group">
+        <label for="invoice-date">Invoice Date</label>
+        <input type="text" class="form-control" id="invoice-date" placeholder="Jan 01, 2019">
+    </div>
+    <div class="form-group">
+        <label for="year">Invoice Year</label>
+        <input type="text" class="form-control" id="year">
+    </div>
+    <div class="form-group">
+        <label for="month">Invoice Month</label>
+        <input type="text" class="form-control" id="month" placeholder="1">
+    </div>
+    <div class="form-group">
+        <label for="day">Invoice Day</label>
+        <input type="text" class="form-control" id="day" placeholder="1">
+    </div>
+    <div class="form-group col-md-4">
+      <label for="source">State</label>
+      <select id="source" class="form-control">
+        <option selected>Choose...</option>
+        <option>Bill Doran</option>
+        <option>Kennicott</option>
+        <option>Krueger</option>
+      </select>
+    </div>
+    <div class="form-group">
+        <label for="price">Price</label>
+        <input type="text" class="form-control" id="price" placeholder="2.55">
+    </div>
+    <div class="form-group">
+        <label for="file">Filename</label>
+        <input type="text" class="form-control" id="file" placeholder="IN490604019">
+    </div>
+</form>
