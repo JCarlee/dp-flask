@@ -5,6 +5,7 @@ import re
 from datetime import datetime
 from flask_login import current_user
 from app.models import Freight, Items
+from flask import flash
 
 now = datetime.utcnow
 
@@ -54,7 +55,7 @@ def define_bunch(current_list):
 
 
 def no_desc_sql(invoice_no, invoice_date, year, month, day, qty, itm, item, item_type, price, price_total, taxable,
-                credit, file_name):
+                credit, fresh, file_name):
     """SQL statement execution if no description"""
     sql_five = Items(invoice=invoice_no,
                      date=invoice_date,
@@ -69,15 +70,15 @@ def no_desc_sql(invoice_no, invoice_date, year, month, day, qty, itm, item, item
                      price=price,
                      price_total=price_total,
                      credit=credit,
+                     fresh=fresh,
                      taxable=taxable,
                      file=file_name,
                      added_by=current_user)
     db.session.add(sql_five)
-    db.session.commit()
 
 
 def desc_sql(c_list, invoice_no, invoice_date, year, month, day, qty, itm, item, item_type, price, price_total, taxable,
-             credit, file_name):
+             credit, fresh, file_name):
     """SQL statement execution if description exists"""
     desc = c_list[5]
     sql_desc = Items(invoice=invoice_no,
@@ -93,12 +94,12 @@ def desc_sql(c_list, invoice_no, invoice_date, year, month, day, qty, itm, item,
                      price=price,
                      price_total=price_total,
                      credit=credit,
+                     fresh=fresh,
                      taxable=taxable,
                      desc=desc,
                      file=file_name,
                      added_by=current_user)
     db.session.add(sql_desc)
-    db.session.commit()
 
 
 def freight_sql(lng_lst, frt_index, invoice_no, invoice_date, year, month, day, file_name):
@@ -114,7 +115,6 @@ def freight_sql(lng_lst, frt_index, invoice_no, invoice_date, year, month, day, 
                           file=file_name,
                           added_by=current_user)
     db.session.add(sql_freight)
-    db.session.commit()
 
 
 def check_distributor(pdf):
@@ -139,55 +139,64 @@ def dir_loop(files_output, pdf_folder):
     freight_invoice = ''
     frt_index = 0
     for pdf in files:
-        pdf_file_obj = open(pdf, 'rb')
-        pdf_reader = PyPDF2.PdfFileReader(pdf_file_obj)
-        no_of_pages = pdf_reader.getNumPages()
-        pdf_text = ''
-        for page in range(no_of_pages):
-            page_obj = pdf_reader.getPage(page)
-            pdf_text += page_obj.extractText()
-        long_list = pdf_text.splitlines()
-        for index, line in enumerate(long_list):
-            if 'Freight' in line:
-                frt_index = index + 1
-        if 'Invoice #' in long_list[4]:
-            short_list = long_list[16:-15]
-        elif 'Credit #' in long_list:
-            short_list = long_list[16:-9]
-        invoice_no, invoice_date, year, month, day = kreuger_invoice_info(long_list)
-        name_check = [1]
-        markers = []
-        for index, line in enumerate(short_list):
-            if represents_int(line) and (index - name_check[-1] != 1):
-                markers.append(index)
-                name_check.append(index)
-        mark_first = markers[:-1]
-        mark_last = markers[1:]
-        file_name = pdf[len(pdf_path) + 1:-len('.pdf')]
-        for x, y in zip(mark_first, mark_last):
-            cur_list = short_list[x:y]
-            qty, itm, prc, price, item_type, price_total_raw = define_bunch(cur_list)
-            price_total = pattern2.sub(lambda m: rep2[re.escape(m.group(0))], price_total_raw)
-            taxable = False
-            credit = False
-            if 'T' in cur_list[3]:
-                taxable = True
-                price_total = price_total.replace('T', '')
-            if "Credit Invoice" in long_list[3]:
-                price, price_total = negative_val(price), negative_val(price_total)
-                credit = True
-            name_list = list(filter(None, cur_list[4].split('  ')))
-            item_long = name_list[0]
-            item = pattern.sub(lambda m: rep[re.escape(m.group(0))], item_long)
-            if y - x == 5:
-                total_items += 1
-                no_desc_sql(invoice_no, invoice_date, year, month, day, qty, itm, item, item_type, price,
-                            price_total, taxable, credit, file_name)
-            elif y-x == 6:
-                total_items += 1
-                desc_sql(cur_list, invoice_no, invoice_date, year, month, day, qty, itm, item, item_type, price,
-                         price_total, taxable, credit, file_name)
-            if "Freight" in long_list and file_name != freight_invoice:
-                freight_invoice = file_name
-                freight_sql(long_list, frt_index, invoice_no, invoice_date, year, month, day, file_name)
-        pdf_file_obj.close()
+        try:
+            pdf_file_obj = open(pdf, 'rb')
+            pdf_reader = PyPDF2.PdfFileReader(pdf_file_obj)
+            no_of_pages = pdf_reader.getNumPages()
+            pdf_text = ''
+            for page in range(no_of_pages):
+                page_obj = pdf_reader.getPage(page)
+                pdf_text += page_obj.extractText()
+            long_list = pdf_text.splitlines()
+            for index, line in enumerate(long_list):
+                if 'Freight' in line:
+                    frt_index = index + 1
+            if 'Invoice #' in long_list[4]:
+                short_list = long_list[16:-15]
+            elif 'Credit #' in long_list:
+                short_list = long_list[16:-9]
+            invoice_no, invoice_date, year, month, day = kreuger_invoice_info(long_list)
+            name_check = [1]
+            markers = []
+            for index, line in enumerate(short_list):
+                if represents_int(line) and (index - name_check[-1] != 1):
+                    markers.append(index)
+                    name_check.append(index)
+            mark_first = markers[:-1]
+            mark_last = markers[1:]
+            file_name = pdf[len(pdf_path) + 1:-len('.pdf')]
+            for x, y in zip(mark_first, mark_last):
+                cur_list = short_list[x:y]
+                qty, itm, prc, price, item_type, price_total_raw = define_bunch(cur_list)
+                price_total = pattern2.sub(lambda m: rep2[re.escape(m.group(0))], price_total_raw)
+                taxable = False
+                credit = False
+                fresh = True
+                if 'T' in cur_list[3]:
+                    taxable = True
+                    price_total = price_total.replace('T', '')
+                if "Credit Invoice" in long_list[3]:
+                    price, price_total = negative_val(price), negative_val(price_total)
+                    credit = True
+                if itm[0].isdigit():
+                    fresh = False
+                name_list = list(filter(None, cur_list[4].split('  ')))
+                item_long = name_list[0]
+                item = pattern.sub(lambda m: rep[re.escape(m.group(0))], item_long)
+                if y - x == 5:
+                    total_items += 1
+                    no_desc_sql(invoice_no, invoice_date, year, month, day, qty, itm, item, item_type, price,
+                                price_total, taxable, credit, fresh, file_name)
+                elif y-x == 6:
+                    total_items += 1
+                    desc_sql(cur_list, invoice_no, invoice_date, year, month, day, qty, itm, item, item_type, price,
+                             price_total, taxable, credit, fresh, file_name)
+                if "Freight" in long_list and file_name != freight_invoice:
+                    freight_invoice = file_name
+                    freight_sql(long_list, frt_index, invoice_no, invoice_date, year, month, day, file_name)
+            pdf_file_obj.close()
+        except:
+            flash(file_name + ".pdf processing failed. NO CHANGES MADE TO DATABASE.")
+            db.session.rollback()
+    db.session.commit()
+    flash("PDF(s) successfully processed.")

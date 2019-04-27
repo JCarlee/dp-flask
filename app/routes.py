@@ -12,7 +12,7 @@ import os
 from werkzeug.utils import secure_filename
 from app.pdf import dir_loop
 from sqlalchemy.sql import func
-from app.models import Items, Freight
+from app.models import Items, Freight, PerBunch
 from sqlalchemy import cast, Numeric, desc
 
 
@@ -56,13 +56,23 @@ def upload_files():
 
 
 @app.route('/fresh', methods=['GET'])
+@login_required
 def fresh():
     f = db.session.query(
-        Items.itm, Items.item, func.sum(Items.qty), Items.stems,
+        Items.itm, Items.item, func.sum(Items.qty), PerBunch.stm,
         cast(func.sum(Items.qty * Items.price) / func.sum(Items.qty), Numeric(2, 2)),
-        cast(func.sum(Items.qty * Items.price) / func.sum(Items.qty) / Items.stems, Numeric(2, 2)))\
-        .filter(Items.credit == 0).filter(Items.stems > 0).group_by(Items.itm)
+        cast(func.sum(Items.qty * Items.price) / func.sum(Items.qty) / PerBunch.stm, Numeric(2, 2)))\
+        .filter(Items.credit == 0).group_by(Items.itm).join(PerBunch, Items.item == PerBunch.item)
     return render_template('fresh.html', title='Fresh', f=f)
+
+
+@app.route('/supplies', methods=['GET'])
+@login_required
+def supplies():
+    a = db.session.query(Items.year, Items.month, cast(func.sum(Items.price_total), Numeric(5, 2)))\
+        .filter(Items.credit == 0).group_by(Items.year, Items.month).\
+        order_by(desc(Items.year), desc(Items.month))
+    return render_template('supplies.html', title='Supplies', a=a)
 
 
 @app.route('/freight', methods=['GET'])
@@ -78,20 +88,58 @@ def freight():
 @login_required
 def add_item():
     if request.method == 'POST':
-        item = Items(request.form['invoice'], request.form['invoice-date'], request.form['year'],
-                     request.form['month'], request.form['day'], request.form['source'], request.form['qty'],
-                     request.form['itm'], request.form['itm'], request.form['item'], request.form['type'],
-                     request.form['price'], request.form['total-price'], request.form['qty'], request.form['desc'],
-                     request.form['file'])
+        item = Items(invoice=request.form['invoice'],
+                     date=request.form['invoice-date'],
+                     year=request.form['year'],
+                     month=request.form['month'],
+                     day=request.form['day'],
+                     source=request.form['source'],
+                     qty=request.form['qty'],
+                     itm=request.form['itm'],
+                     item=request.form['item'],
+                     type=request.form['type'],
+                     price=request.form['price'],
+                     price_total=request.form['total-price'],
+                     desc=request.form['desc'],
+                     file=request.form['file'],
+                     taxable=request.form['taxable'],
+                     crtedit=request.form['credit'],
+                     fresh=request.form['fresh'],
+                     added_by=current_user)
         db.session.add(item)
+        db.session.commit()
         return redirect(url_for('add_item'))
     return render_template('add_item.html', title='Add Item')
 
 
-@app.route('/add_freight', methods=['POST'])
+@app.route('/add_freight', methods=['GET', 'POST'])
 @login_required
 def add_freight():
+    if request.method == 'POST':
+        frt = Freight(invoice=request.form['invoice'],
+                      date=request.form['invoice-date'],
+                      year=request.form['year'],
+                      month=request.form['month'],
+                      day=request.form['day'],
+                      source=request.form['source'],
+                      price=request.form['price'],
+                      file=request.form['file'],
+                      added_by=current_user)
+        db.session.add(frt)
+        db.session.commit()
+        flash('Freight Record Successfully Added')
+        return redirect(url_for('add_freight'))
     return render_template('add_freight.html', title='Add Freight')
+
+
+@app.route('/modify_stem', methods=['GET', 'POST'])
+@login_required
+def modify_stem():
+    itemq = db.session.query(PerBunch.item)
+    if request.method == 'POST':
+        db.session.update(PerBunch).where(PerBunch.item == request.form['item']).values(stm=request.form['stem'])
+        flash()
+    return render_template('/modify_stem.html', title='Modify Stem', itemq=itemq)
 
 
 @app.route('/login', methods=['GET', 'POST'])

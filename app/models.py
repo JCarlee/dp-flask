@@ -57,7 +57,6 @@ class Items(db.Model):
     day = db.Column(db.Integer)
     source = db.Column(db.String(100))
     qty = db.Column(db.Integer)
-    stems = db.Column(db.Integer)
     itm = db.Column(db.String(10))
     item = db.Column(db.String(100))
     type = db.Column(db.String(10))

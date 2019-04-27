@@ -1,41 +1,49 @@
 {% extends 'base.html' %}
-
-<form>
-    <div class="form-group">
-        <label for="invoice">Invoice Number</label>
-        <input type="text" class="form-control" id="invoice">
+{% block app_content %}
+<h3>Add Freight Record</h3>
+<form method = "post">
+    <div class="form-group row">
+        <div class="form-group col-md-4">
+            <label for="source">Distributor</label>
+            <input type="text" class="form-control" name="source" id="source" placeholder="Krueger, Kennicott, Bill Doran">
+        </div>
+        <div class="form-group col-md-4">
+            <label for="invoice">Invoice Number</label>
+            <input type="text" class="form-control" name="invoice" id="invoice" placeholder="49-0102-015">
+        </div>
+        <div class="form-group col-md-4">
+            <label for="invoice-date">Invoice Date</label>
+            <input type="text" class="form-control" name="invoice-date" id="invoice-date" placeholder="Jan 01, 2019">
+        </div>
     </div>
-    <div class="form-group">
-        <label for="invoice-date">Invoice Date</label>
-        <input type="text" class="form-control" id="invoice-date" placeholder="Jan 01, 2019">
+    <div class="form-group row">
+        <div class="form-group col-md-4">
+            <label for="year">Invoice Year</label>
+            <input type="text" class="form-control" name="year" id="year" placeholder="2019">
+        </div>
+        <div class="form-group col-md-4">
+            <label for="month">Invoice Month</label>
+            <input type="text" class="form-control" name="month" id="month" placeholder="1">
+        </div>
+        <div class="form-group col-md-4">
+            <label for="day">Invoice Day</label>
+            <input type="text" class="form-control" name="day" id="day" placeholder="1">
+        </div>
     </div>
-    <div class="form-group">
-        <label for="year">Invoice Year</label>
-        <input type="text" class="form-control" id="year">
-    </div>
-    <div class="form-group">
-        <label for="month">Invoice Month</label>
-        <input type="text" class="form-control" id="month" placeholder="1">
-    </div>
-    <div class="form-group">
-        <label for="day">Invoice Day</label>
-        <input type="text" class="form-control" id="day" placeholder="1">
-    </div>
-    <div class="form-group col-md-4">
-      <label for="source">State</label>
-      <select id="source" class="form-control">
-        <option selected>Choose...</option>
-        <option>Bill Doran</option>
-        <option>Kennicott</option>
-        <option>Krueger</option>
-      </select>
-    </div>
-    <div class="form-group">
-        <label for="price">Price</label>
-        <input type="text" class="form-control" id="price" placeholder="2.55">
-    </div>
-    <div class="form-group">
+    <div class="form-group row">
+        <div class="form-group col-md-6">
+            <label for="price">Price</label>
+            <input type="text" class="form-control" name="price" id="price" placeholder="2.55">
+        </div>
+    <div class="form-group col-md-6">
         <label for="file">Filename</label>
-        <input type="text" class="form-control" id="file" placeholder="IN490604019">
+        <input type="text" class="form-control" name="file" id="file" placeholder="IN490604019">
+    </div>
+    </div>
+    <div class="form-group row">
+        <div class="col-sm-10">
+            <input class="btn btn-primary" type="submit" value="Submit">
+        </div>
     </div>
 </form>
+{% endblock %}

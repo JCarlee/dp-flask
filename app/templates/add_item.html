@@ -1,129 +1,128 @@
 {% extends 'base.html' %}
 {% block app_content %}
+<h3>Add Invoice Item</h3>
 <form method = "post">
-    <div class="form-group">
-        <label for="invoice">Invoice Number</label>
-        <input type="text" class="form-control" id="invoice" placeholder="49-0102-015">
-    </div>
-    <div class="form-group">
-        <label for="invoice-date">Invoice Date</label>
-        <input type="text" class="form-control" id="invoice-date" placeholder="Jan 01, 2019">
-    </div>
-    <div class="form-group">
-        <label for="year">Invoice Year</label>
-        <input type="text" class="form-control" id="year" placeholder="2019">
-    </div>
-    <div class="form-group">
-        <label for="month">Invoice Month</label>
-        <input type="text" class="form-control" id="month" placeholder="1">
-    </div>
-    <div class="form-group">
-        <label for="day">Invoice Day</label>
-        <input type="text" class="form-control" id="day" placeholder="1">
-    </div>
-    <div class="form-group">
-      <label for="source">Distributor</label>
-      <select id="source" class="form-control">
-        <option selected>Choose...</option>
-        <option>Bill Doran</option>
-        <option>Kennicott</option>
-        <option>Krueger</option>
-      </select>
-    </div>
-    <div class="form-group">
-        <label for="qty">Item Quantity</label>
-        <input type="text" class="form-control" id="qty" placeholder="2">
-    </div>
-    <div class="form-group">
-        <label for="itm">Item Abbreviation</label>
-        <input type="text" class="form-control" id="itm" placeholder="SCA">
-    </div>
-    <div class="form-group">
-        <label for="item">Item (Full Name)</label>
-        <input type="text" class="form-control" id="item" placeholder="SCABIOSA">
-    </div>
-    <div class="form-group">
-        <label for="type">Type</label>
-        <input type="text" class="form-control" id="type" placeholder="BU, ST">
-    </div>
-    <div class="form-group">
-        <label for="price">Item Price</label>
-        <input type="text" class="form-control" id="price" placeholder="2.55">
-    </div>
-    <div class="form-group">
-        <label for="total-price">Item Price Total</label>
-        <input type="text" class="form-control" id="total-price" placeholder="5.10">
-    </div>
-    <div class="form-group">
-        <label for="desc">Description</label>
-        <input type="text" class="form-control" id="desc" placeholder="PREMIUM">
-    </div>
-    <div class="form-group">
-        <label for="file">Filename</label>
-        <input type="text" class="form-control" id="file" placeholder="IN490604019">
-    </div>
-    <fieldset class="form-group">
-        <div class="row">
-          <label class="col-form-label col-sm-2 pt-0">Taxable</label>
-          <div class="col-sm-10">
-            <div class="form-check">
-              <input class="form-check-input" type="radio" name="taxable" id="taxable1" value="0" checked>
-              <label class="form-check-label" for="taxable1">
-                No
-              </label>
-            </div>
-            <div class="form-check">
-              <input class="form-check-input" type="radio" name="taxable" id="taxable2" value="1">
-              <label class="form-check-label" for="taxable2">
-                Yes (T)
-              </label>
-            </div>
-          </div>
+    <div class="form-group row">
+        <div class="form-group col-md-4">
+            <label for="source">Distributor</label>
+            <input type="text" class="form-control" id="source" placeholder="Krueger, Kennicott, Bill Doran">
         </div>
-    </fieldset>
-    <fieldset class="form-group">
-        <div class="row">
-          <label class="col-form-label col-sm-2 pt-0">Credit</label>
-          <div class="col-sm-10">
-            <div class="form-check">
-              <input class="form-check-input" type="radio" name="credit" id="credit1" value="0" checked>
-              <label class="form-check-label" for="credit1">
-                No
-              </label>
-            </div>
-            <div class="form-check">
-              <input class="form-check-input" type="radio" name="credit" id="credit2" value="1">
-              <label class="form-check-label" for="credit2">
-                Yes (Negative Price)
-              </label>
-            </div>
-          </div>
+        <div class="form-group col-md-4">
+            <label for="invoice">Invoice Number</label>
+            <input type="text" class="form-control" id="invoice" placeholder="49-0102-015">
         </div>
-    </fieldset>
-    <fieldset class="form-group">
-        <div class="row">
-          <label class="col-form-label col-sm-2 pt-0">Fresh?</label>
-          <div class="col-sm-10">
-            <div class="form-check">
-              <input class="form-check-input" type="radio" name="fresh" id="fresh1" value="0" checked>
-              <label class="form-check-label" for="credit1">
-                  Fresh
-              </label>
-            </div>
-            <div class="form-check">
-              <input class="form-check-input" type="radio" name="fresh" id="fresh2" value="1">
-              <label class="form-check-label" for="credit2">
-                Other
-              </label>
-            </div>
-          </div>
+        <div class="form-group col-md-4">
+            <label for="invoice-date">Invoice Date</label>
+            <input type="text" class="form-control" id="invoice-date" placeholder="Jan 01, 2019">
         </div>
-    </fieldset>
-    <div class="row">
-<input class="btn btn-success mb-5" type="submit" value="Submit">
     </div>
-    <div class="row">
-        <br>
+    <div class="form-group row">
+        <div class="form-group col-md-4">
+            <label for="year">Invoice Year</label>
+            <input type="text" class="form-control" id="year" placeholder="2019">
+        </div>
+        <div class="form-group col-md-4">
+            <label for="month">Invoice Month</label>
+            <input type="text" class="form-control" id="month" placeholder="1">
+        </div>
+        <div class="form-group col-md-4">
+            <label for="day">Invoice Day</label>
+            <input type="text" class="form-control" id="day" placeholder="1">
+        </div>
+    </div>
+    <div class="form-group row">
+        <div class="form-group col-md-3">
+            <label for="qty">Item Quantity</label>
+            <input type="text" class="form-control" id="qty" placeholder="2">
+        </div>
+        <div class="form-group col-md-3">
+            <label for="itm">Item Abbreviation</label>
+            <input type="text" class="form-control" id="itm" placeholder="SCA">
+        </div>
+        <div class="form-group col-md-3">
+            <label for="item">Item (Full Name)</label>
+            <input type="text" class="form-control" id="item" placeholder="SCABIOSA">
+        </div>
+        <div class="form-group col-md-3">
+            <label for="type">Type</label>
+            <input type="text" class="form-control" id="type" placeholder="BU, ST">
+        </div>
+    </div>
+    <div class="form-group row">
+        <div class="form-group col-md-6">
+            <label for="price">Item Price</label>
+            <input type="text" class="form-control" id="price" placeholder="2.55">
+        </div>
+        <div class="form-group col-md-6">
+            <label for="total-price">Item Price Total</label>
+            <input type="text" class="form-control" id="total-price" placeholder="5.10">
+        </div>
+    </div>
+    <div class="form-group row">
+        <div class="form-group col-md-6">
+            <label for="desc">Description</label>
+            <input type="text" class="form-control" id="desc" placeholder="PREMIUM">
+        </div>
+        <div class="form-group col-md-6">
+            <label for="file">Filename</label>
+            <input type="text" class="form-control" id="file" placeholder="IN490604019">
+        </div>
+    </div>
+    <div class="form-group row">
+      <label class="col-md-1">Taxable</label>
+      <div class="col-md-1">
+        <div class="form-check">
+          <input class="form-check-input" type="radio" name="taxable" id="taxable1" value="False" checked>
+          <label class="form-check-label" for="taxable1">
+            No
+          </label>
+        </div>
+        <div class="form-check">
+          <input class="form-check-input" type="radio" name="taxable" id="taxable2" value="True">
+          <label class="form-check-label" for="taxable2">
+            Yes (T)
+          </label>
+        </div>
+      </div>
+    </div>
+    <div class="form-group row">
+      <label class="col-md-1">Credit</label>
+      <div class="col-md-2">
+        <div class="form-check">
+          <input class="form-check-input" type="radio" name="credit" id="credit1" value="False" checked>
+          <label class="form-check-label" for="credit1">
+            No
+          </label>
+        </div>
+        <div class="form-check">
+          <input class="form-check-input" type="radio" name="credit" id="credit2" value="True">
+          <label class="form-check-label" for="credit2">
+            Yes (Negative Price)
+          </label>
+        </div>
+      </div>
+    </div>
+    <div class="form-group row">
+      <label class="col-sm-1">Fresh?</label>
+      <div class="col-md-1">
+        <div class="form-check">
+          <input class="form-check-input" type="radio" name="fresh" id="fresh1" value="False" checked>
+          <label class="form-check-label" for="credit1">
+              Fresh
+          </label>
+        </div>
+        <div class="form-check">
+          <input class="form-check-input" type="radio" name="fresh" id="fresh2" value="True">
+          <label class="form-check-label" for="credit2">
+            Supplies
+          </label>
+        </div>
+      </div>
+    </div>
+    <div class="form-group row">
+        <div class="col-sm-10">
+            <input class="btn btn-primary" type="submit" value="Submit">
+        </div>
     </div>
 </form>
 {% endblock %}

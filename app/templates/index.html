@@ -3,11 +3,11 @@
 {% block app_content %}
 <h2>Select file(s) to process</h2>
 <form method="post" action="/" enctype="multipart/form-data">
-    <p>
-        <input type="file" name="file" autocomplete="off" multiple value="Upload PDFs">
-    </p>
-    <p>
+    <div class="form-group">
+        <input id="pdf" type="file" class="form-control-file" name="file" autocomplete="off" multiple accept="application/pdf">
+    </div>
+    <div class="form-group">
         <input class="btn btn-success" type="submit" value="Upload and Process">
-    </p>
+    </div>
 </form>
 {% endblock %}
