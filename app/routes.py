@@ -137,8 +137,12 @@ def add_freight():
 def modify_stem():
     itemq = db.session.query(PerBunch.item)
     if request.method == 'POST':
-        db.session.update(PerBunch).where(PerBunch.item == request.form['item']).values(stm=request.form['stem'])
-        flash()
+        stan = request.form['item']
+        king = request.form['stem']
+        stem = PerBunch.query.filter_by(PerBunch.item == stan)
+        stem.stm = king
+        db.session.commit()
+        flash('Stem updated.')
     return render_template('/modify_stem.html', title='Modify Stem', itemq=itemq)
 
 
